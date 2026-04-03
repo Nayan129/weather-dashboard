@@ -13,9 +13,9 @@ export async function fetchCurrentWeather(lat, lon, date) {
         daily: [
           "temperature_2m_max",
           "temperature_2m_min",
-          "precipitation_sum",
           "sunrise",
           "sunset",
+          "precipitation_sum",
           "windspeed_10m_max",
           "uv_index_max",
           "precipitation_probability_max",
@@ -59,38 +59,25 @@ export async function fetchCurrentWeather(lat, lon, date) {
 }
 
 export async function fetchHistoricalWeather(lat, lon, startDate, endDate) {
-  const [weatherRes, aqiRes] = await Promise.all([
-    axios.get(`${BASE}/archive`, {
-      params: {
-        latitude: lat,
-        longitude: lon,
-        daily: [
-          "temperature_2m_max",
-          "temperature_2m_min",
-          "temperature_2m_mean",
-          "sunrise",
-          "sunset",
-          "precipitation_sum",
-          "windspeed_10m_max",
-          "winddirection_10m_dominant",
-          "pm10",
-          "pm2_5",
-        ].join(","),
-        timezone: "auto",
-        start_date: startDate,
-        end_date: endDate,
-      },
-    }),
-    axios.get(`${AQI_BASE}/air-quality`, {
-      params: {
-        latitude: lat,
-        longitude: lon,
-        hourly: ["pm10", "pm2_5"].join(","),
-        timezone: "auto",
-        start_date: startDate,
-        end_date: endDate,
-      },
-    }),
-  ]);
-  return { weather: weatherRes.data, aqi: aqiRes.data };
+  const weatherRes = await axios.get(`${BASE}/archive`, {
+    params: {
+      latitude: lat,
+      longitude: lon,
+      daily: [
+        "temperature_2m_max",
+        "temperature_2m_min",
+        "sunrise",
+        "sunset",
+        "precipitation_sum",
+        "windspeed_10m_max",
+        "uv_index_max",
+        "precipitation_probability_max",
+      ].join(","),
+      timezone: "auto",
+      start_date: startDate,
+      end_date: endDate,
+    },
+  });
+
+  return { weather: weatherRes.data };
 }

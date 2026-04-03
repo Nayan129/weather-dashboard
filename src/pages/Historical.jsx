@@ -40,6 +40,7 @@ export default function Historical({ coords }) {
   const [startDate, setStartDate] = useState(
     format(subYears(today, 1), "yyyy-MM-dd"),
   );
+
   const [endDate, setEndDate] = useState(format(today, "yyyy-MM-dd"));
   const [histData, setHistData] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -48,6 +49,10 @@ export default function Historical({ coords }) {
   const maxStart = format(subYears(new Date(endDate), 2), "yyyy-MM-dd");
 
   const loadData = async () => {
+    if (startDate > endDate) {
+      setError("Start date cannot be greater than end date");
+      return;
+    }
     if (!coords) return;
     setLoading(true);
     setError(null);
@@ -59,6 +64,7 @@ export default function Historical({ coords }) {
         endDate,
       );
       setHistData(res);
+      console.log(startDate, endDate);
     } catch (e) {
       setError("Failed to load historical data.");
     } finally {
@@ -67,20 +73,35 @@ export default function Historical({ coords }) {
   };
 
   const daily = histData?.weather?.daily;
-
+  
   const chartData =
     daily?.time?.map((date, i) => ({
       date,
       tempMax: daily.temperature_2m_max?.[i],
       tempMin: daily.temperature_2m_min?.[i],
       tempMean: daily.temperature_2m_mean?.[i],
-      sunrise: daily.sunrise?.[i]?.slice(11, 16),
-      sunset: daily.sunset?.[i]?.slice(11, 16),
+      sunrise: daily.sunrise?.[i]
+        ? new Date(daily.sunrise[i]).toLocaleTimeString("en-IN", {
+            timeZone: "Asia/Kolkata",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
+        : null,
+
+      sunset: daily.sunset?.[i]
+        ? new Date(daily.sunset[i]).toLocaleTimeString("en-IN", {
+            timeZone: "Asia/Kolkata",
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true,
+          })
+        : null,
       precip: daily.precipitation_sum?.[i],
       windMax: daily.windspeed_10m_max?.[i],
       windDir: daily.winddirection_10m_dominant?.[i],
-      pm10: daily.pm10?.[i],
-      pm25: daily.pm2_5?.[i],
+      pm10: null,
+      pm25: null,
     })) || [];
 
   return (

@@ -33,7 +33,7 @@ export default function CurrentDay({ coords }) {
       {/* Date picker */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
         <h2 className="text-white font-semibold text-xl flex items-center gap-2">
-          📍 Your Weather Today
+          📍 Weather Today
         </h2>
         <input
           type="date"
